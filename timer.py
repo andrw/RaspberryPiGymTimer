@@ -151,6 +151,7 @@ class Timer():
         )
         self._seconds = 0
         self._minutes = 0
+        self._timerCount = 0
 
 
     def _pulse(self, time):
@@ -173,10 +174,13 @@ class Timer():
 
     def update(self): 
         self._display.update(self._minutes, self._seconds)
-        if self._seconds > 0:
-            self._seconds -= 1
-        if self._minutes > 0:
-            self._minutes -= 1
+        self._timerCount += 1
+        if self._timerCount % 10 = 0 
+            self._timerCount = 0
+            if self._seconds > 0:
+                self._seconds -= 1
+            if self._minutes > 0:
+                self._minutes -= 1
 
 
 
@@ -192,7 +196,7 @@ key_3.when_pressed = timer.key_3
 while True:
     timer.update()
     display.clear() # doesnt belong here
-    time.sleep(1.0)
+    time.sleep(1.0 / 10)
 
 
 
