@@ -9,7 +9,7 @@ from gpiozero import Button
 from unicornhatmini import UnicornHATMini
 
 unicornhatmini = UnicornHATMini()
-unicornhatmini.set_brightness(0.5)
+unicornhatmini.set_brightness(0.3)
 
 # Digits as 3x5 pixel elements stored as 15bits
 # MSB is top-left, each 5 bits are a column
@@ -91,20 +91,22 @@ class Display():
         #minute tens digit
         minuteTens = int(self._minutes / 10)
         r, g, b = [int(c * self._digit_left_br) for c in self._digit_left_color]
-        self._draw_digit(minuteTens, 1, 1, r, g, b)
+        self._draw_digit(minuteTens, 1, 1, 249, 82, 255)
 
 
         minuteOnes = int(self._minutes % 10)
-        r, g, b = [int(c * self._digit_right_br) for c in self._digit_left_color]
-        self._draw_digit(minuteOnes, 5, 1, r, g, b)
+        r, g, b = [int(c * self._digit_left_br) for c in self._digit_left_color]
+        # self._draw_digit(minuteOnes, 5, 1, 81, 168, 255)
+        self._draw_digit(minuteOnes, 5, 1, 249, 82, 255)
 
         secondTens = int(self._seconds / 10)
         r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
-        self._draw_digit(secondTens, 9, 1, r, g, b)
+        self._draw_digit(secondTens, 9, 1, 5, 255, 161)
 
         secondOnes = int(self._seconds % 10)
         r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
-        self._draw_digit(secondOnes, 13, 1, r, g, b)
+        # self._draw_digit(secondOnes, 13, 1, 255, 97, 0)
+        self._draw_digit(minuteOnes, 13, 1, 5, 255, 161)
 
         self._draw_colon(255, 0, 0)
         
@@ -142,18 +144,11 @@ class Timer():
         self._display.set_digits(5, 1)
         curTime = time.time()
         self._display.set_light_brightness(
-            self._pulse(curTime / 2),
-            self._pulse((curTime + 0.25) / 2),
-            self._pulse((curTime + 0.5) / 2),
-            self._pulse((curTime + 0.75) / 2)
-        )
-        self._display.set_digit_brightness(
-            self._pulse(curTime),
-            self._pulse(curTime)
-        )
-        self._display.set_digit_color(
-            self._hue(curTime / 10),
-            self._hue(curTime / 5 + 20)
+            1, 1, 1, 1
+            # self._pulse(curTime / 2),
+            # self._pulse((curTime + 0.25) / 2),
+            # self._pulse((curTime + 0.5) / 2),
+            # self._pulse((curTime + 0.75) / 2)
         )
         self._seconds = 0
         self._minutes = 0
@@ -187,13 +182,24 @@ class Timer():
     def update(self): 
         self._display.update(self._minutes, self._seconds)
         self._timerCount += 1
-        if self._timerCount % 3 == 0:
+        if self._timerCount % 20 == 0:
             self._timerCount = 0
             if self._seconds > 0:
                 self._seconds -= 1
             elif ((self._seconds == 0) and (self._minutes > 0)):
                 self._minutes -= 1
                 self._seconds = 59
+
+
+        # curTime = time.time()
+        # self._display.set_digit_brightness(
+        #     self._pulse(curTime),
+        #     self._pulse(curTime)
+        # )
+        # self._display.set_digit_color(
+        #     self._hue(186),
+        #     self._hue(100.44)
+        # )
 
 display = Display(output_device=unicornhatmini)
 timer = Timer(display)
@@ -205,7 +211,7 @@ key_3.when_pressed = timer.key_3
 while True:
     timer.update()
     display.clear() # doesnt belong here
-    time.sleep(1.0 / 3)
+    time.sleep(1.0 / 20)
 
 
 
