@@ -54,8 +54,8 @@ class Display():
         self.green = (0, 255, 0)
         self.blue = (0, 0, 255)
         self.yellow = (255, 255, 0)
-        self._digit_left = None
-        self._digit_right = None
+        self._minutes = 0
+        self._seconds = 0
         self._digit_left_br = 1.0
         self._digit_right_br = 1.0
         self._digit_left_color = (128, 128, 128)
@@ -91,24 +91,34 @@ class Display():
 
     def update(self, minutes, seconds):
         self.set_digits(minutes, seconds)
-        # Draw the current digts (score/level/lives, kinda)
-        if self._digit_left is not None:
-            r, g, b = [int(c * self._digit_left_br) for c in self._digit_left_color]
-            self._draw_digit(self._digit_left, 1, 1, r, g, b)
+        
+        #minute tens digit
+        minuteTens = int(self._minutes / 10)
+        r, g, b = [int(c * self._digit_left_br) for c in self._digit_left_color]
+        self._draw_digit(minuteTens, 1, 1, r, g, b)
 
-        if self._digit_right is not None:
-            r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
-            self._draw_digit(self._digit_right, 5, 1, r, g, b)
 
-        if self._digit_right is not None:
-            r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
-            self._draw_digit(self._digit_right, 9, 1, r, g, b)
+        minuteOnes = int(self._minutes % 10)
+        r, g, b = [int(c * self._digit_right_br) for c in self._digit_left_color]
+        self._draw_digit(minuteOnes, 5, 1, r, g, b)
 
-        if self._digit_right is not None:
-            r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
-            self._draw_digit(self._digit_right, 13, 1, r, g, b)
+        secondTens = int(self._seconds / 10)
+        r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
+        self._draw_digit(secondTens, 9, 1, r, g, b)
 
+        secondOnes = int(self._seconds % 10)
+        r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
+        self._draw_digit(secondOnes, 13, 1, r, g, b)
+
+        self._draw_colon(255, 0, 0)
+        
         self._output.show()
+
+        
+
+    def _draw_colon(self, r, g, b):
+        self._output.set_pixel(8, 2, r, g, b)
+        self._output.set_pixel(8, 5 r, g, b)
 
     def set_light_brightness(self, red, green, blue, yellow):
         self._br_red = red
@@ -116,9 +126,9 @@ class Display():
         self._br_blue = blue
         self._br_yellow = yellow
 
-    def set_digits(self, left, right):
-        self._digit_left = left
-        self._digit_right = right
+    def set_digits(self, minutes, seconds):
+        self._minutes = minutes
+        self._seconds = seconds
 
     def set_digit_brightness(self, left, right):
         self._digit_left_br = left
@@ -147,7 +157,7 @@ class Timer():
         )
         self._display.set_digit_color(
             self._hue(curTime / 10),
-            self._hue(curTime / 10 + 1)
+            self._hue(curTime / 5 + 20)
         )
         self._seconds = 0
         self._minutes = 0
@@ -163,10 +173,16 @@ class Timer():
         return tuple([int(c * 255) for c in colorsys.hsv_to_rgb(h, 1.0, 1.0)])
 
     def key_1(self):
-        self._seconds += 3
+        self._minutes += 1
+        # print("{}x{}".format(self._minutes, self._seconds))
 
     def key_2(self):
-        self._minutes += 1
+        self._seconds += 30
+
+        # increase minutes instead if over 60 seconds
+        if self._seconds / 60 > 1:
+            self._seconds -= 60
+            self._minutes += 1
     
     def key_3(self):
         self._seconds = 0
@@ -175,16 +191,13 @@ class Timer():
     def update(self): 
         self._display.update(self._minutes, self._seconds)
         self._timerCount += 1
-        if self._timerCount % 10 = 0 
+        if self._timerCount % 3 == 0:
             self._timerCount = 0
             if self._seconds > 0:
                 self._seconds -= 1
-            if self._minutes > 0:
+            elif ((self._seconds == 0) and (self._minutes > 0)):
                 self._minutes -= 1
-
-
-
-NUM = 0 
+                self._seconds = 59
 
 display = Display(output_device=unicornhatmini)
 timer = Timer(display)
@@ -196,7 +209,7 @@ key_3.when_pressed = timer.key_3
 while True:
     timer.update()
     display.clear() # doesnt belong here
-    time.sleep(1.0 / 10)
+    time.sleep(1.0 / 3)
 
 
 
