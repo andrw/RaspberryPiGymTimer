@@ -61,10 +61,6 @@ class Display():
         self._digit_left_color = (128, 128, 128)
         self._digit_right_color = (128, 128, 128)
 
-    def _draw_light(self, brightness, x, y, r, g, b):
-        r, g, b = [int(c * brightness) for c in (r, g, b)]
-        self._draw_rect(x, y, 3, 3, r, g, b)
-
     def _draw_rect(self, x, y, w, h, r, g, b):
         for ry in range(h):
             for rx in range(w):
@@ -118,7 +114,7 @@ class Display():
 
     def _draw_colon(self, r, g, b):
         self._output.set_pixel(8, 2, r, g, b)
-        self._output.set_pixel(8, 5 r, g, b)
+        self._output.set_pixel(8, 4, r, g, b)
 
     def set_light_brightness(self, red, green, blue, yellow):
         self._br_red = red
