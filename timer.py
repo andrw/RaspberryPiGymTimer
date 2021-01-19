@@ -106,7 +106,7 @@ class Display():
         secondOnes = int(self._seconds % 10)
         r, g, b = [int(c * self._digit_right_br) for c in self._digit_right_color]
         # self._draw_digit(secondOnes, 13, 1, 255, 97, 0)
-        self._draw_digit(minuteOnes, 13, 1, 5, 255, 161)
+        self._draw_digit(secondOnes, 13, 1, 5, 255, 161)
 
         self._draw_colon(255, 0, 0)
         
