@@ -209,8 +209,8 @@ key_2.when_pressed = timer.key_2
 key_3.when_pressed = timer.key_3
 
 while True:
+    display.clear()
     timer.update()
-    display.clear() # doesnt belong here
     time.sleep(1.0 / 20)
 
 
